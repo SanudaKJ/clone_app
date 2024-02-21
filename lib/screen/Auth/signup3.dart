@@ -1,4 +1,5 @@
 import 'package:auth_final/screen/Auth/login.dart';
+import 'package:auth_final/screen/Auth/otp.dart';
 import 'package:flutter/material.dart';
 
 class SignUp3 extends StatefulWidget {
@@ -32,7 +33,7 @@ class _SignUp3State extends State<SignUp3> {
                   // controller: emailController,
                   decoration: const InputDecoration(
                       contentPadding: EdgeInsets.all(8),
-                      hintText: 'Enter Personal Email',
+                      hintText: 'Enter Email',
                       border: OutlineInputBorder()),
                 ),
               ),
@@ -56,10 +57,12 @@ class _SignUp3State extends State<SignUp3> {
                   height: 42,
                   child: ElevatedButton(
                     onPressed: () {
-                      // Navigator.push(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //         builder: (context) => const SignUp2()));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const OTP(),
+                        ),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 213, 183, 243),
