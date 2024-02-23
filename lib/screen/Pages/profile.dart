@@ -14,6 +14,7 @@ class _ProfileState extends State<Profile> {
     return Scaffold(
       body: SafeArea(
           child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Center(child: Text('Profile')),
           TextButton(
