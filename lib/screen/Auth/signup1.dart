@@ -1,5 +1,9 @@
+import 'dart:ffi';
+
 import 'package:auth_final/screen/Auth/login.dart';
 import 'package:auth_final/screen/Auth/signup2.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class SignUp1 extends StatefulWidget {
@@ -10,8 +14,33 @@ class SignUp1 extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp1> {
-  // final emailController = TextEditingController();
-  // final passwordController = TextEditingController();
+  final usernameController = TextEditingController();
+  final passwordController = TextEditingController();
+  Future<void> register() async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+              email: usernameController.text.trim(),
+              password: passwordController.text.trim());
+
+      String userId = userCredential.user!.uid;
+
+      await FirebaseFirestore.instance.collection('users').doc(userId).set({
+        'username': usernameController.text.trim(),
+        'password': passwordController.text.trim(),
+      });
+      if (mounted) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const Login(),
+            ));
+      }
+    } catch (e) {
+      print("Error: ${e.toString()}");
+      return;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,17 +62,17 @@ class _SignUpState extends State<SignUp1> {
               Padding(
                 padding: const EdgeInsets.only(top: 10.0),
                 child: TextFormField(
-                  // controller: emailController,
+                  controller: usernameController,
                   decoration: const InputDecoration(
                       contentPadding: EdgeInsets.all(8),
-                      hintText: 'Enter University Email',
+                      hintText: 'Enter Username',
                       border: OutlineInputBorder()),
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 15.0),
                 child: TextFormField(
-                  // controller: passwordController,
+                  controller: passwordController,
                   decoration: const InputDecoration(
                       contentPadding: EdgeInsets.all(8),
                       hintText: 'Enter Password',
@@ -53,7 +82,7 @@ class _SignUpState extends State<SignUp1> {
               Padding(
                 padding: const EdgeInsets.only(top: 15.0),
                 child: TextFormField(
-                  // controller: passwordController,
+                  controller: passwordController,
                   decoration: const InputDecoration(
                       contentPadding: EdgeInsets.all(8),
                       hintText: 'Confirm Password',
@@ -91,13 +120,7 @@ class _SignUpState extends State<SignUp1> {
                 children: [
                   const Text("Already have an account?"),
                   TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const Login(),
-                            ));
-                      },
+                      onPressed: register,
                       child: const Text(
                         "Login",
                         style: TextStyle(fontWeight: FontWeight.bold),

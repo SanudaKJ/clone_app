@@ -1,6 +1,7 @@
 import 'package:auth_final/screen/Auth/signup1.dart';
 import 'package:auth_final/bottom_nav.dart';
 import 'package:auth_final/screen/Pages/home.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Login extends StatefulWidget {
@@ -13,6 +14,22 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  Future<void> login() async {
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: emailController.text.trim(),
+          password: passwordController.text.trim());
+    } catch (e) {
+      print(e);
+      return;
+    }
+    if (mounted) {
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => const Bottom_Nav()));
+    }
+  }
+
+  bool _isVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -44,8 +61,19 @@ class _LoginState extends State<Login> {
               Padding(
                 padding: const EdgeInsets.only(top: 15.0),
                 child: TextFormField(
+                  obscureText: !_isVisible,
                   controller: passwordController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            _isVisible = !_isVisible;
+                          });
+                        },
+                        icon: _isVisible
+                            ? Icon(Icons.visibility)
+                            : Icon(Icons.visibility_off),
+                      ),
                       contentPadding: EdgeInsets.all(8),
                       hintText: 'Enter Password',
                       border: OutlineInputBorder()),
@@ -66,12 +94,7 @@ class _LoginState extends State<Login> {
                 width: double.infinity,
                 height: 42,
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const Bottom_Nav()));
-                  },
+                  onPressed: login,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromARGB(255, 213, 183, 243),
                   ),
